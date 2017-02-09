@@ -84,9 +84,9 @@
 //   for (var i=0;i<num.length;i++){
 //     total+=num[i];
 //   }
+//   return total;
 // }
 //
-// console.log(sumAll(1,2,3,4,5,6));
 // console.log(sumAll(1,2,3,4,5,6));
 //
 // function power({base = 1, power = 2} = {}){
@@ -94,14 +94,30 @@
 // }
 // console.log(power());
 // console.log(power({}));
-// console.log(power({base: 3, power: 10}));
+// console.log(power({base: 3,}));
+
+//
+// let number = "123.34";
+// let numToWord = {
+//   "1": "one",
+//   "2": "two"
+// }
+// for (var i=0;i<number.length;i++){
+//   console.log(number[i]);
+// }
 
 
-let number = "123.34";
-let numToWord = {
-  "1": "one",
-  "2": "two"
+let a = {'th':'thai', 'en':'english'};
+let b = {'th':'siam', 'jp':'japan', 'cn':'china'};
+console.log({a,b});
+console.log({...a,b});
+console.log({...a,...b});
+
+
+
+function addNumberToArray(array, number){
+    //Using array.map only!
 }
-for (var i=0;i<number.length;i++){
-  console.log(number[i]);
-}
+
+console.log(addNumberToArray([1,2,3], 5)); //[6,7,8]
+console.log(addNumberToArray([1,2,3], 1)); //[2,3,4]
