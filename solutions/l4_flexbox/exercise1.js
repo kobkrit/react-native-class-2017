@@ -17,12 +17,11 @@ class flexbox extends Component {
     return (
       <View style={styles.container}>
 
-        <__________
+        <Image
           style={{height:100, width:100}}
           source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
         />
-
-        <____ style={styles.text}>__________________</_____>
+        <Text style={styles.text}>Hello to React Native!</Text>
 
       </View>
     );
@@ -31,9 +30,9 @@ class flexbox extends Component {
 const styles = StyleSheet.create({
   container:{
     margin:20,
-    backgroundColor: '_________',
+    backgroundColor: 'gray',
     borderWidth: 2,
-    borderColor: '_______',
+    borderColor: 'black',
     borderRadius: 20,
     padding: 10
   },

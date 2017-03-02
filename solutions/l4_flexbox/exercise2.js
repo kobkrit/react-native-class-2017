@@ -12,33 +12,22 @@ import {
 } from 'react-native';
 
 class flexbox extends Component {
-
   render() {
     return (
       <View style={styles.container}>
-
-        <__________
-          style={{height:100, width:100}}
-          source={{uri: 'https://facebook.github.io/react/img/logo_og.png'}}
-        />
-
-        <____ style={styles.text}>__________________</_____>
-
+        <Text style={styles.headline}>Hello World!</Text>
       </View>
     );
  }
 }
 const styles = StyleSheet.create({
   container:{
-    margin:20,
-    backgroundColor: '_________',
-    borderWidth: 2,
-    borderColor: '_______',
-    borderRadius: 20,
-    padding: 10
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center'
   },
-  text:{
-    fontSize:20
+  headline:{
+    fontSize:40
   }
 });
 

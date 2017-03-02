@@ -15,16 +15,19 @@ class flexbox extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.headline}>Hello World!</Text>
+
+
+
       </View>
     );
  }
 }
 const styles = StyleSheet.create({
   container:{
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center'
+
+
+
+  
   },
   headline:{
     fontSize:40
