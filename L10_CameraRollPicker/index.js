@@ -1,1 +1,1 @@
-import a from './selfiesWithAsyncStorage.js'
+import a from './inclass.js'
