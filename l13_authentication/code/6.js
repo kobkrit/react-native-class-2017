@@ -1,4 +1,4 @@
-r/**
+/**
  * Sample React Native App
  * https://github.com/facebook/react-native
  * @flow
@@ -134,7 +134,6 @@ export default class l12_firebase extends Component {
       this.setState({
         chats: snapshot.val() || []
       });
-      this.markAsRead();
     })
   }
 
@@ -152,24 +151,6 @@ export default class l12_firebase extends Component {
         chats = [];
       }
       chats.push({name: this.state.name, chat: this.state.chat, when: new Date().getTime()});
-      this.setState({chat: ""});
-      return chats;
-    });
-  }
-
-  markAsRead(){
-    this.chatsRef.transaction((chats) => {
-      if (!chats) {
-        chats = [];
-      }
-      for (let i in chats){
-        if (!chats[i].read){
-          chats[i].read = [];
-        }
-        if (chats[i].read.indexOf(this.state.name)<0){
-          chats[i].read.push(this.state.name);
-        }
-      }
       this.setState({chat: ""});
       return chats;
     });
@@ -260,9 +241,6 @@ render() {
               <Text style={styles.bold}>{obj.name || "Anonymous"}</Text>
               <Text>
                 ({moment(obj.when).fromNow()})</Text>
-              <Text>
-                Read by: {(obj.read || []).length}
-              </Text>
             </View>
             <View style={styles.chat}>
               <Text style={styles.chatText}>{obj.chat}</Text>

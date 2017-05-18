@@ -1,11 +1,10 @@
-r/**
+/**
  * Sample React Native App
  * https://github.com/facebook/react-native
  * @flow
  */
 
 import React, {Component} from 'react';
-import Firestack from 'react-native-firestack'
 import moment from 'moment';
 import {
   AppRegistry,
@@ -29,9 +28,8 @@ var config = {
   messagingSenderId: "480732941628"
 };
 firebase.initializeApp(config);
-const firestack = new Firestack();
 
-export default class l12_firebase extends Component {
+export default class l13_authentication extends Component {
   constructor(props) {
     super(props);
     this.database = firebase.database();
@@ -39,34 +37,14 @@ export default class l12_firebase extends Component {
       chat: '',
       chats: [],
       userOnline: 0,
-      modalVisible: false,
-      name: "Anonymous",
-      isShowLogin: true,
-      email: "",
-      password: ""
+      modalVisible: true,
+      name: "Anonymous"
     }
     this.userOnlineRef = this.database.ref('userOnline');
     this.chatsRef = this.database.ref('chats');
     this.handleAppStateChange = this.handleAppStateChange.bind(this);
     this.sendChat = this.sendChat.bind(this);
-    this.register = this.register.bind(this);
-    this.login = this.login.bind(this);
-    this.listeningForAuthChange = this.listeningForAuthChange.bind(this);
     AppState.addEventListener('change', this.handleAppStateChange);
-  }
-
-  listeningForAuthChange() {
-    firestack.auth.listenForAuth((evt) => {
-      if (!evt.authenticated) {
-        // There was an error or there is no user
-        console.log(evt.error)
-        this.setState({name: 'Anonymous', modalVisible: true});
-      } else {
-        // evt.user contains the user details
-        console.log('User details', evt.user);
-        this.setState({name: evt.user.email});
-      }
-    }).then(() => console.log('Listening for authentication changes'));
   }
 
   handleAppStateChange() {
@@ -76,36 +54,6 @@ export default class l12_firebase extends Component {
     } else if (AppState.currentState == 'inactive') {
       BackgroundTimer.setTimeout(() => this.decreaseNumberOfUserOnlineByTransaction(), 0);
     }
-  }
-
-  register() {
-    console.log(this.state.email, this.state.password);
-    firestack.auth.createUserWithEmail(this.state.email,
-       this.state.password).then((user) => {
-      this.setState({isShowLogin: true, modalVisible: false});
-      console.log("Create user successfully");
-    }).catch((err) => {
-      alert("An error occured: " + err.description);
-      console.log('An error occurred', err);
-    })
-  }
-
-  login() {
-    console.log(this.state.email, this.state.password);
-    firestack.auth.signInWithEmail(this.state.email,
-       this.state.password).then((user) => {
-      this.setState({isShowLogin: true, modalVisible: false});
-      console.log("Login user successfully");
-    }).catch((err) => {
-      alert("An error occured: " + err.rawDescription);
-      console.log('An error occurred', err);
-    })
-  }
-
-  signOut() {
-    firestack.auth.signOut().then(res => {
-      console.log('You have been signed out')
-    }).catch(err => console.log('Uh oh... something weird happened'));
   }
 
   getNumberOfUserOnlineOnceAndIncreaseBy1ByTransaction() {
@@ -134,7 +82,6 @@ export default class l12_firebase extends Component {
       this.setState({
         chats: snapshot.val() || []
       });
-      this.markAsRead();
     })
   }
 
@@ -142,7 +89,6 @@ export default class l12_firebase extends Component {
     this.listeningForNumberOfUserOnline();
     this.getNumberOfUserOnlineOnceAndIncreaseBy1ByTransaction();
     this.listeningForChatChange();
-    this.listeningForAuthChange();
   }
 
   sendChat() {
@@ -157,80 +103,7 @@ export default class l12_firebase extends Component {
     });
   }
 
-  markAsRead(){
-    this.chatsRef.transaction((chats) => {
-      if (!chats) {
-        chats = [];
-      }
-      for (let i in chats){
-        if (!chats[i].read){
-          chats[i].read = [];
-        }
-        if (chats[i].read.indexOf(this.state.name)<0){
-          chats[i].read.push(this.state.name);
-        }
-      }
-      this.setState({chat: ""});
-      return chats;
-    });
-  }
-
-render() {
-  let authUI;
-
-  if (this.state.isShowLogin) {
-    authUI = (
-      <View>
-        <Text style={styles.title}>Login</Text>
-        <Text>E-mail</Text>
-        <TextInput keyboardType="email-address" autoCapitalize="none"
-          style={styles.textInput} value={this.state.email}
-          onChangeText={(t) => this.setState({email: t})}></TextInput>
-        <Text>Password</Text>
-        <TextInput secureTextEntry={true} style={styles.textInput}
-          value={this.state.password}
-          onChangeText={(t) => this.setState({password: t})}></TextInput>
-        <TouchableOpacity style={styles.submitButton} onPress={this.login}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondButton}
-          onPress={() => this.setState({isShowLogin: false})}>
-          <Text style={styles.secondButtonText}>Don't have any account?</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  } else {
-    authUI = (
-      <View>
-        <Text style={styles.title}>Register</Text>
-        <Text>E-mail</Text>
-        <TextInput keyboardType="email-address" autoCapitalize="none"
-           style={styles.textInput} value={this.state.email}
-           onChangeText={(t) => this.setState({email: t})}></TextInput>
-        <Text>Password</Text>
-        <TextInput secureTextEntry={true} style={styles.textInput}
-          value={this.state.password}
-          onChangeText={(t) => this.setState({password: t})}></TextInput>
-        <TouchableOpacity style={styles.submitButton} onPress={this.register}>
-          <Text style={styles.buttonText}>Register</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondButton}
-          onPress={() => this.setState({isShowLogin: true})}>
-          <Text style={styles.secondButtonText}>Already have account?</Text>
-        </TouchableOpacity>
-      </View>
-    )
-  }
-
-    let signOut;
-    if (!this.state.modalVisible) {
-      signOut = (
-        <TouchableOpacity style={styles.signOutButton} onPress={this.signOut}>
-          <Text style={styles.signOutText}>Sign Out</Text>
-        </TouchableOpacity>
-      )
-    }
-
+  render() {
     return (
       <View style={styles.container}>
         <Modal animationType={"slide"} transparent={true} visible={this.state.modalVisible}>
@@ -238,20 +111,18 @@ render() {
             <TouchableOpacity style={styles.closeButton} onPress={() => this.setState({modalVisible: false})}>
               <Text>X</Text>
             </TouchableOpacity>
-            {authUI}
+            <Text>Please input your name.</Text>
+            <TextInput style={styles.textInput} value={this.state.name} onChangeText={(t) => this.setState({name: t})}></TextInput>
+            <TouchableOpacity style={styles.submitButton} onPress={() => {
+              this.setState({modalVisible: false});
+            }}>
+              <Text style={styles.buttonText}>OK</Text>
+            </TouchableOpacity>
           </View>
         </Modal>
         <View style={styles.header}>
-          <View style={{
-            flexDirection: 'row'
-          }}>
-            <Text style={styles.labelText}>
-              Hello {this.state.name}!
-            </Text>
-            {signOut}
-          </View>
           <Text style={styles.labelText}>
-            #User online: {this.state.userOnline}
+            Hello {this.state.name}! #User online: {this.state.userOnline}
           </Text>
         </View>
         <View style={styles.content}>
@@ -260,9 +131,6 @@ render() {
               <Text style={styles.bold}>{obj.name || "Anonymous"}</Text>
               <Text>
                 ({moment(obj.when).fromNow()})</Text>
-              <Text>
-                Read by: {(obj.read || []).length}
-              </Text>
             </View>
             <View style={styles.chat}>
               <Text style={styles.chatText}>{obj.chat}</Text>
@@ -338,9 +206,9 @@ const styles = StyleSheet.create({
     color: 'white'
   },
   modal: {
-    height: 280,
+    height: 150,
     width: 300,
-    marginTop: 150,
+    marginTop: 200,
     padding: 10,
     alignSelf: 'center',
     backgroundColor: 'lightblue',
@@ -352,19 +220,6 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: 'flex-end'
   },
-  secondButtonText: {
-    color: 'white'
-  },
-  secondButton: {
-    alignSelf: 'center',
-    backgroundColor: 'gray',
-    height: 44,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 10,
-    padding: 5
-  },
   submitButton: {
     alignSelf: 'center',
     backgroundColor: 'darkblue',
@@ -375,19 +230,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     margin: 10
   },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold'
-  },
   bold: {
     fontWeight: 'bold'
-  },
-  signOutButton: {
-    padding: 5
-  },
-  signOutText: {
-    color: 'red'
   }
 });
 
-AppRegistry.registerComponent('l13_authentication', () => l12_firebase);
+AppRegistry.registerComponent('l13_authentication', () => l13_authentication);
